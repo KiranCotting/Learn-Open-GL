@@ -1,0 +1,6 @@
+precision lowp float;
+varying lowp vec4 sColor;
+
+void main() {
+    gl_FragColor = sColor;
+}

@@ -1,0 +1,13 @@
+attribute vec4 shapeLocation;
+attribute vec4 shapeColor;
+
+uniform mat4 model;
+uniform mat4 projection;
+uniform mat4 view;
+
+varying lowp vec4 sColor;
+
+void main() {
+    gl_Position = projection * view * model * shapeLocation;
+    sColor = shapeColor;
+}
