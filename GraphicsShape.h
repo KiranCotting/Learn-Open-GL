@@ -8,12 +8,11 @@
 /// <summary> A high level graphics object for representing any arbitrary polygon.
 /// Intended to be inherited to create more specific geometries. </summary>
 class GraphicsShape {
-protected:
-	unsigned short numVertices, numTriangleVertices, numEdgeVertices;
-	float *vertices, *colors, *edgeColors;
-	unsigned short *triangles, *edges;
-	unsigned int vertexColorBuffer, trianglesBuffer, edgesBuffer, edgeColorsBuffer, program, facesVAO, edgesVAO;
-	bool buffered, programLoaded;
+	//static unsigned short numVertices, numTriangleVertices, numEdgeVertices;
+	//static float *vertices, *colors, *edgeColors;
+	//static unsigned short *triangles, *edges;
+	//static unsigned int vertexColorBuffer, trianglesBuffer, edgesBuffer, edgeColorsBuffer, program, facesVAO, edgesVAO;
+	//static bool buffered, programLoaded;
 public:
 	/// <summary> The x position of this shape. Can be modified directly. </summary>
 	float x;
@@ -35,8 +34,6 @@ public:
 	float rz;
 	/// <summary> Whether this shape should render in wireframe only. Can be modified directly. </summary>
 	bool wire;
-	/// <summary> Shape constructor. </summary>
-	GraphicsShape();
 	/// <summary> Returns this shape's location as a vector. </summary>
 	Vector getLocation() const;
 	/// <summary> Set this shape's location. </summary>
@@ -69,6 +66,7 @@ public:
 	void setRotation(const float& xrotation, const float& yrotation, const float& zrotation);
 	/// <summary> Returns this shape's model matrix. This function computes a new matrix every time it is called. </summary>
 	Matrix getModel() const;
+	/// <summary> Buffers this shape's model data, as well as sets up the VAO for this shape. </summary>
 	virtual void buffer();
 	/// <summary> Renders this shape's edges, either for highlighting or wireframe purposes. </summary>
 	virtual void drawEdges();
@@ -77,6 +75,47 @@ public:
 	/// <summary> The main render loop of this shape. Responsible for loading and setting up the relevant shaders,
 	/// binding and buffering data, and calling buffer(), drawEdges(), and drawTriangles(). </summary>
 	virtual void render(const Matrix&, const Matrix&);
-	/// <summary> Responsible for destroying all the dynamic memory used by this shape, as well as cleaning up webGL states.
-	~GraphicsShape();
+
+protected:
+	// The following block of getters exists so that each child of the GraphicsShape class may have separate static
+	// versions of these variables, without sharing those static variables with the parent or each other, but while still
+	// allowing GraphicsShape to provide inherited functions which use these variables.
+	
+	virtual unsigned short& getNumVertices() const = 0;
+
+	virtual unsigned short& getNumTriangleVertices() const = 0;
+
+	virtual unsigned short& getNumEdgeVertices() const = 0;
+
+	virtual float*& getVertices() const = 0;
+
+	virtual float*& getColors() const = 0;
+
+	virtual float*& getEdgeColors() const = 0;
+
+	virtual unsigned short*& getTriangles() const = 0;
+
+	virtual unsigned short*& getEdges() const = 0;
+
+	virtual unsigned int& getVertexColorBuffer() const = 0;
+
+	virtual unsigned int& getTrianglesBuffer() const = 0;
+
+	virtual unsigned int& getEdgesBuffer() const = 0;
+
+	virtual unsigned int& getEdgeColorsBuffer() const = 0;
+
+	virtual unsigned int& getFacesVAO() const = 0;
+
+	virtual unsigned int& getEdgesVAO() const = 0;
+
+	virtual bool& getBuffered() const = 0;
+
+	// Constructor is protected to prevent instantiation.
+	/// <summary> Shape constructor. </summary>
+	GraphicsShape();
+
+private:
+	static unsigned int program;
+	static bool programLoaded;
 };

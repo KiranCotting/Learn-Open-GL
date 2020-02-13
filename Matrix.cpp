@@ -64,7 +64,7 @@ bool Matrix::operator==(const Matrix& rhs) const {
 
 bool Matrix::nearlyEquals(const Matrix& matrix, const float& tolerance) const {
 	for (int i = 0; i < 16; ++i) {
-		if (values[i] - matrix.getValue(i) > tolerance || values[i] - matrix.getValue(i) < -tolerance) {
+		if (abs(values[i] - matrix.getValue(i)) > tolerance) {
 			return false;
 		}
 	}

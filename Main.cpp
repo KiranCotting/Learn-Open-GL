@@ -12,6 +12,7 @@ Creating using the tutorial at https://learnopengl.com/
 #include <iostream>
 using std::cout; using std::endl;
 #include "Cube.h"
+#include "Sphere.h"
 #include "Camera.h"
 
 static const double frameTime = 1.0 / 60;
@@ -30,14 +31,14 @@ int windowHeight = 1000;
 
 float aspect = (float) windowWidth / (float) windowHeight;
 
-float cameraTheta = M_PI / 2;
+float cameraTheta = (float) M_PI / 2;
 
 float cameraPhi = 0;
 
 double prevMouseX, prevMouseY;
 
-Cube cube1(5, 0, 0, 5, 5, 5);
-Cube cube2(-5, 0, 0, 5, 5, 5);
+Cube cube(5, 0, 0, 5, 5, 5);
+Sphere sphere(3, -5, 0, 0, 2.5, 2.5, 2.5);
 
 int frameCount = 0;
 
@@ -139,12 +140,12 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) { 
-	cameraTheta += (float) (xpos - prevMouseX) / 1000 * M_PI;
-	cameraPhi += (float) (ypos - prevMouseY) / 1000 * M_PI;
-	if (cameraPhi > M_PI / 2 - 0.0001f) {
-		cameraPhi = M_PI / 2 - 0.0001f;
+	cameraTheta += (float) (xpos - prevMouseX) / 1000 * (float) M_PI;
+	cameraPhi += (float) (ypos - prevMouseY) / 1000 * (float) M_PI;
+	if (cameraPhi > (float) M_PI / 2 - 0.0001f) {
+		cameraPhi = (float) M_PI / 2 - 0.0001f;
 	} else if (cameraPhi < -M_PI / 2 + 0.0001f) {
-		cameraPhi = -M_PI / 2 + 0.0001f;
+		cameraPhi = (float) -M_PI / 2 + 0.0001f;
 	}
 	prevMouseX = xpos;
 	prevMouseY = ypos;
@@ -167,14 +168,18 @@ void processInput(GLFWwindow* window)
 		movement += Vector(0, 1, 0);
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		movement -= Vector(0, 1, 0);
-	cameraPosition += movement;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+		movement *= 10;
+	}
+	cameraPosition += movement / 10;
 }
 
 void setup() {
 	glfwGetCursorPos(window, &prevMouseX, &prevMouseY);
 
 	// Camera
-	camera.frustum(-5 * aspect, 5 * aspect, -5, 5, 10, 250);
+	//camera.frustum(-5 * aspect, 5 * aspect, -5, 5, 10, 250);
+	camera.frustum(-0.1f * aspect, 0.1f * aspect, -0.1f, 0.1f, 0.1f, 250);
 
 	// Create a GL window
 	glViewport(0, 0, 1000, 1000);
@@ -197,6 +202,6 @@ void render(float time) {
 	);
 
 	camera.viewPoint(cameraPosition, look, Vector(0, 1, 0));
-	cube1.render(camera.getProjection(), camera.getView());
-	cube2.render(camera.getProjection(), camera.getView());
+	cube.render(camera.getProjection(), camera.getView());
+	sphere.render(camera.getProjection(), camera.getView());
 }

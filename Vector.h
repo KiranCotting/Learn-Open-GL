@@ -2,7 +2,7 @@
 #include <cmath>
 class Vector {
 private:
-	float values[4] = { 0,0,0,0 };
+	float values[4] = { 0,0,0,1 };
 public:
 	Vector() = default;
 	/// <summary> Creates a new vector from the values in <paramref name="arr"/> </summary>
@@ -49,6 +49,12 @@ public:
 	Vector operator-() const;
 	/// <summary> Value accessor. </summary>
 	float operator[](const int&) const;
+	/// <summary> Vector equality. </summary>
+	bool operator==(const Vector&) const;
+	/// <summary> Vector equality within tolerance. </summary>
+	/// <param name="rhs"> The other Vector to check equality against. </param>
+	/// <param name="tolerance"> How far apart two values can be to be considered equal. </param>
+	bool nearlyEquals(const Vector& rhs, const float& tolerance) const;
 	/// <summary> Magnitude. </summary>
 	float mag() const;
 	/// <summary> Square magnitude. </summary>

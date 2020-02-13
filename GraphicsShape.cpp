@@ -1,24 +1,9 @@
 #include "GraphicsShape.h"
 
+unsigned int GraphicsShape::program;
+bool GraphicsShape::programLoaded;
+
 GraphicsShape::GraphicsShape() {
-	numVertices = 0;
-	numTriangleVertices = 0;
-	numEdgeVertices = 0;
-	vertices = new float[0];
-	colors = new float[0];
-	edgeColors = new float[0];
-	triangles = new unsigned short[0];
-	edges = new unsigned short[0];
-	wire = false;
-	buffered = false;
-	programLoaded = false;
-	edgeColorsBuffer = 0;
-	edgesBuffer = 0;
-	trianglesBuffer = 0;
-	vertexColorBuffer = 0;
-	program = 0;
-	facesVAO = 0;
-	edgesVAO = 0;
 	x = 0;
 	y = 0;
 	z = 0;
@@ -28,6 +13,8 @@ GraphicsShape::GraphicsShape() {
 	rx = 0;
 	ry = 0;
 	rz = 0;
+	wire = false;
+	programLoaded = false;
 }
 
 Vector GraphicsShape::getLocation() const {
@@ -84,42 +71,42 @@ Matrix GraphicsShape::getModel() const {
 }
 
 void GraphicsShape::buffer() {
-	float* verticesColor = new float[numVertices * 7];
-	for (int i = 0; i < numVertices; ++i) {
-		verticesColor[i * 7] = vertices[i * 3];
-		verticesColor[i * 7 + 1] = vertices[i * 3 + 1];
-		verticesColor[i * 7 + 2] = vertices[i * 3 + 2];
-		verticesColor[i * 7 + 3] = colors[i * 4];
-		verticesColor[i * 7 + 4] = colors[i * 4 + 1];
-		verticesColor[i * 7 + 5] = colors[i * 4 + 2];
-		verticesColor[i * 7 + 6] = colors[i * 4 + 3];
+	float* verticesColor = new float[getNumVertices() * 7];
+	for (int i = 0; i < getNumVertices(); ++i) {
+		verticesColor[i * 7] = getVertices()[i * 3];
+		verticesColor[i * 7 + 1] = getVertices()[i * 3 + 1];
+		verticesColor[i * 7 + 2] = getVertices()[i * 3 + 2];
+		verticesColor[i * 7 + 3] = getColors()[i * 4];
+		verticesColor[i * 7 + 4] = getColors()[i * 4 + 1];
+		verticesColor[i * 7 + 5] = getColors()[i * 4 + 2];
+		verticesColor[i * 7 + 6] = getColors()[i * 4 + 3];
 	}
 
-	glGenBuffers(1, &vertexColorBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexColorBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numVertices * 7, verticesColor, GL_STATIC_DRAW);
+	glGenBuffers(1, &getVertexColorBuffer());
+	glBindBuffer(GL_ARRAY_BUFFER, getVertexColorBuffer());
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * getNumVertices() * 7, verticesColor, GL_STATIC_DRAW);
 
-	glGenBuffers(1, &trianglesBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, trianglesBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * numTriangleVertices, triangles, GL_STATIC_DRAW);
+	glGenBuffers(1, &getTrianglesBuffer());
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, getTrianglesBuffer());
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * getNumTriangleVertices(), getTriangles(), GL_STATIC_DRAW);
 
-	glGenBuffers(1, &edgesBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, edgesBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * numEdgeVertices, edges, GL_STATIC_DRAW);
+	glGenBuffers(1, &getEdgesBuffer());
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, getEdgesBuffer());
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * getNumEdgeVertices(), getEdges(), GL_STATIC_DRAW);
 
-	glGenBuffers(1, &edgeColorsBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, edgeColorsBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numEdgeVertices * 4, edgeColors, GL_STATIC_DRAW);
+	glGenBuffers(1, &getEdgeColorsBuffer());
+	glBindBuffer(GL_ARRAY_BUFFER, getEdgeColorsBuffer());
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * getNumEdgeVertices() * 4, getEdgeColors(), GL_STATIC_DRAW);
 
 	// Set up shader attributes
 	unsigned int attribShapeLocation = glGetAttribLocation(program, "shapeLocation");
 	unsigned int attribShapeColor = glGetAttribLocation(program, "shapeColor");
 
 	// Set up for drawing faces
-	glGenVertexArrays(1, &facesVAO);
-	glBindVertexArray(facesVAO);
+	glGenVertexArrays(1, &getFacesVAO());
+	glBindVertexArray(getFacesVAO());
 
-	glBindBuffer(GL_ARRAY_BUFFER, vertexColorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, getVertexColorBuffer());
 
 	// positions
 	glVertexAttribPointer(attribShapeLocation, 3, GL_FLOAT, false, 28, (void*)0);
@@ -129,39 +116,39 @@ void GraphicsShape::buffer() {
 	glEnableVertexAttribArray(attribShapeLocation);
 	glEnableVertexAttribArray(attribShapeColor);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, trianglesBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, getTrianglesBuffer());
 
 	glBindVertexArray(0);
 
 	// Set up for drawing edges
-	glGenVertexArrays(1, &edgesVAO);
-	glBindVertexArray(edgesVAO);
+	glGenVertexArrays(1, &getEdgesVAO());
+	glBindVertexArray(getEdgesVAO());
 
 	// positions
-	glBindBuffer(GL_ARRAY_BUFFER, vertexColorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, getVertexColorBuffer());
 	glVertexAttribPointer(attribShapeLocation, 3, GL_FLOAT, false, 28, (void*)0);
 	glEnableVertexAttribArray(attribShapeLocation);
 
 	// colors
-	glBindBuffer(GL_ARRAY_BUFFER, edgeColorsBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, getEdgeColorsBuffer());
 	glVertexAttribPointer(attribShapeColor, 4, GL_FLOAT, false, 0, (void*)0);
 	glEnableVertexAttribArray(attribShapeColor);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, edgesBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, getEdgesBuffer());
 
 	glBindVertexArray(0);
 
-	buffered = true;
+	getBuffered() = true;
 
 	delete[] verticesColor;
 }
 
 void GraphicsShape::drawEdges() {
-	glDrawElements(GL_LINES, numEdgeVertices, GL_UNSIGNED_SHORT, (void*)0);
+	glDrawElements(GL_LINES, getNumEdgeVertices(), GL_UNSIGNED_SHORT, (void*)0);
 }
 
 void GraphicsShape::drawTriangles() {
-	glDrawElements(GL_TRIANGLE_STRIP, numTriangleVertices, GL_UNSIGNED_SHORT, (void*)0);
+	glDrawElements(GL_TRIANGLE_STRIP, getNumTriangleVertices(), GL_UNSIGNED_SHORT, (void*)0);
 }
 
 void GraphicsShape::render(const Matrix& projection, const Matrix& view) {
@@ -172,7 +159,7 @@ void GraphicsShape::render(const Matrix& projection, const Matrix& view) {
 	}
 
 	// Set up buffers
-	if (!buffered) {
+	if (!getBuffered()) {
 		buffer();
 	}
 
@@ -186,7 +173,7 @@ void GraphicsShape::render(const Matrix& projection, const Matrix& view) {
 	glUniformMatrix4fv(viewUniform, 1, true, view.getValues());
 
 	// Bind everything for drawing faces
-	glBindVertexArray(facesVAO);
+	glBindVertexArray(getFacesVAO());
 
 	// Draw from triangles array
 	if (!wire) {
@@ -194,7 +181,7 @@ void GraphicsShape::render(const Matrix& projection, const Matrix& view) {
 	}
 
 	// Bind everything for drawing edges
-	glBindVertexArray(edgesVAO);
+	glBindVertexArray(getEdgesVAO());
 
 	// Draw from edges array
 	drawEdges();
@@ -202,13 +189,4 @@ void GraphicsShape::render(const Matrix& projection, const Matrix& view) {
 	glBindVertexArray(0);
 
 	glUseProgram(0);
-}
-
-GraphicsShape::~GraphicsShape() {
-	delete[] vertices;
-	delete[] colors;
-	delete[] edgeColors;
-	delete[] triangles;
-	delete[] edges;
-	glDeleteProgram(program);
 }

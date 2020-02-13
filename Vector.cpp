@@ -142,6 +142,14 @@ float Vector::operator[](const int& i) const {
 	return values[i];
 }
 
+bool Vector::operator==(const Vector& rhs) const {
+	return values[0] == rhs.values[0] && values[1] == rhs.values[1] && values[2] == rhs.values[2];
+}
+
+bool Vector::nearlyEquals(const Vector& rhs, const float& tolerance) const {
+	return abs(values[0] - rhs.values[0]) < tolerance && abs(values[1] - rhs.values[1]) < tolerance && abs(values[2] - rhs.values[2]) < tolerance;
+}
+
 float Vector::mag() const {
 	return sqrtf(values[0] * values[0] + values[1] * values[1] + values[2] * values[2]);
 }
