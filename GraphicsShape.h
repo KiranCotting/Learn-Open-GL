@@ -77,13 +77,17 @@ public:
 	virtual void render(const Matrix&, const Matrix&);
 
 protected:
+	char currentLOD = 0;
+
 	// The following block of getters exists so that each child of the GraphicsShape class may have separate static
 	// versions of these variables, without sharing those static variables with the parent or each other, but while still
 	// allowing GraphicsShape to provide inherited functions which use these variables.
 	
+	virtual char& getMaxLOD() const = 0;
+
 	virtual unsigned short& getNumVertices() const = 0;
 
-	virtual unsigned short& getNumTriangleVertices() const = 0;
+	virtual unsigned short*& getNumTriangleVertices() const = 0;
 
 	virtual unsigned short& getNumEdgeVertices() const = 0;
 
@@ -92,14 +96,14 @@ protected:
 	virtual float*& getColors() const = 0;
 
 	virtual float*& getEdgeColors() const = 0;
-
-	virtual unsigned short*& getTriangles() const = 0;
+	
+	virtual unsigned short**& getTriangles() const = 0;
 
 	virtual unsigned short*& getEdges() const = 0;
 
 	virtual unsigned int& getVertexColorBuffer() const = 0;
 
-	virtual unsigned int& getTrianglesBuffer() const = 0;
+	virtual unsigned int*& getTrianglesBuffers() const = 0;
 
 	virtual unsigned int& getEdgesBuffer() const = 0;
 

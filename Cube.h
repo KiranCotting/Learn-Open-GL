@@ -19,15 +19,18 @@ public:
 	void drawTriangles() override;
 
 private:
-	static unsigned short numVertices, numTriangleVertices, numEdgeVertices;
+	static unsigned short numVertices, *numTriangleVertices, numEdgeVertices;
 	static float *vertices, *colors, *edgeColors;
-	static unsigned short *triangles, *edges;
-	static unsigned int vertexColorBuffer, trianglesBuffer, edgesBuffer, edgeColorsBuffer, facesVAO, edgesVAO;
+	static unsigned short **triangles, *edges;
+	static unsigned int vertexColorBuffer, *trianglesBuffers, edgesBuffer, edgeColorsBuffer, facesVAO, edgesVAO;
 	static bool buffered, initialized;
+	static char maxLOD;
+
+	char& getMaxLOD() const override;
 
 	unsigned short& getNumVertices() const override;
 
-	unsigned short& getNumTriangleVertices() const override;
+	unsigned short*& getNumTriangleVertices() const override;
 
 	unsigned short& getNumEdgeVertices() const override;
 
@@ -37,13 +40,13 @@ private:
 
 	float*& getEdgeColors() const override;
 
-	unsigned short*& getTriangles() const override;
+	unsigned short**& getTriangles() const override;
 
 	unsigned short*& getEdges() const override;
 
 	unsigned int& getVertexColorBuffer() const override;
 
-	unsigned int& getTrianglesBuffer() const override;
+	unsigned int*& getTrianglesBuffers() const override;
 
 	unsigned int& getEdgesBuffer() const override;
 

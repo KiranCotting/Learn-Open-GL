@@ -86,9 +86,11 @@ void GraphicsShape::buffer() {
 	glBindBuffer(GL_ARRAY_BUFFER, getVertexColorBuffer());
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * getNumVertices() * 7, verticesColor, GL_STATIC_DRAW);
 
-	glGenBuffers(1, &getTrianglesBuffer());
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, getTrianglesBuffer());
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * getNumTriangleVertices(), getTriangles(), GL_STATIC_DRAW);
+	for (int i = 0; i <= getMaxLOD(); ++i) {
+		glGenBuffers(1, &getTrianglesBuffers()[i]);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, getTrianglesBuffers()[i]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * getNumTriangleVertices()[i], getTriangles()[i], GL_STATIC_DRAW);
+	}
 
 	glGenBuffers(1, &getEdgesBuffer());
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, getEdgesBuffer());
@@ -115,8 +117,6 @@ void GraphicsShape::buffer() {
 	// colors
 	glEnableVertexAttribArray(attribShapeLocation);
 	glEnableVertexAttribArray(attribShapeColor);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, getTrianglesBuffer());
 
 	glBindVertexArray(0);
 
@@ -148,7 +148,7 @@ void GraphicsShape::drawEdges() {
 }
 
 void GraphicsShape::drawTriangles() {
-	glDrawElements(GL_TRIANGLE_STRIP, getNumTriangleVertices(), GL_UNSIGNED_SHORT, (void*)0);
+	glDrawElements(GL_TRIANGLE_STRIP, getNumTriangleVertices()[currentLOD], GL_UNSIGNED_SHORT, (void*)0);
 }
 
 void GraphicsShape::render(const Matrix& projection, const Matrix& view) {
@@ -163,6 +163,19 @@ void GraphicsShape::render(const Matrix& projection, const Matrix& view) {
 		buffer();
 	}
 
+	// Determine Level of Detail
+	if (getMaxLOD() > 0) {
+		Vector position(x, y, z);
+		position = view * position;
+		currentLOD = (char)-100 / position.getZ();
+		if (currentLOD > getMaxLOD()) {
+			currentLOD = getMaxLOD();
+		}
+		else if (currentLOD < 0) {
+			currentLOD = 0;
+		}
+	}
+
 	glUseProgram(program);
 
 	unsigned int modelUniform = glGetUniformLocation(program, "model");
@@ -172,8 +185,11 @@ void GraphicsShape::render(const Matrix& projection, const Matrix& view) {
 	glUniformMatrix4fv(projectionUniform, 1, true, projection.getValues());
 	glUniformMatrix4fv(viewUniform, 1, true, view.getValues());
 
-	// Bind everything for drawing faces
+	// Bind everything for drawing faces, except the triangles element array
 	glBindVertexArray(getFacesVAO());
+
+	// Bind the correct element array based on LOD
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, getTrianglesBuffers()[currentLOD]);
 
 	// Draw from triangles array
 	if (!wire) {

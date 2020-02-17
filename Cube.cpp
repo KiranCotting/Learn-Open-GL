@@ -1,10 +1,11 @@
 #include "Cube.h"
 
-unsigned short Cube::numVertices, Cube::numTriangleVertices, Cube::numEdgeVertices;
+unsigned short Cube::numVertices, * Cube::numTriangleVertices, Cube::numEdgeVertices;
 float* Cube::vertices, * Cube::colors, * Cube::edgeColors;
-unsigned short* Cube::triangles, * Cube::edges;
-unsigned int Cube::vertexColorBuffer, Cube::trianglesBuffer, Cube::edgesBuffer, Cube::edgeColorsBuffer, Cube::facesVAO, Cube::edgesVAO;
+unsigned short** Cube::triangles, * Cube::edges;
+unsigned int Cube::vertexColorBuffer, * Cube::trianglesBuffers, Cube::edgesBuffer, Cube::edgeColorsBuffer, Cube::facesVAO, Cube::edgesVAO;
 bool Cube::buffered = false, Cube::initialized = false;
+char Cube::maxLOD = 0;
 
 Cube::Cube(const float& x, const float& y, const float& z, const float& sx, const float& sy, const float& sz, const float& rx, const float& ry, const float& rz) {
 	this->x = x;
@@ -16,9 +17,13 @@ Cube::Cube(const float& x, const float& y, const float& z, const float& sx, cons
 	this->rx = rx;
 	this->ry = ry;
 	this->rz = rz;
+	this->currentLOD = 0;
+
 	if (!initialized) {
 		numVertices = 8;
-		numTriangleVertices = 22;
+		trianglesBuffers = new unsigned int[maxLOD + 1];
+		numTriangleVertices = new unsigned short[maxLOD + 1];
+		numTriangleVertices[0] = 22;
 		numEdgeVertices = 24;
 		vertices = new float[numVertices * 3]{
 			-0.5, -0.5, -0.5,
@@ -64,7 +69,8 @@ Cube::Cube(const float& x, const float& y, const float& z, const float& sx, cons
 			0, 0, 0, 1, // black
 			0, 0, 0, 1 // black
 		};
-		triangles = new unsigned short[numTriangleVertices] {
+		triangles = new unsigned short* [maxLOD + 1];
+		triangles[0] = new unsigned short[numTriangleVertices[0]] {
 			0, 1, 3, 5, // bottom
 				6, 7, // front
 				2, 4, // top
@@ -81,9 +87,11 @@ void Cube::drawTriangles() {
 	glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_SHORT, (void*)20);
 }
 
+char& Cube::getMaxLOD() const { return maxLOD; }
+
 unsigned short& Cube::getNumVertices() const { return numVertices; }
 
-unsigned short& Cube::getNumTriangleVertices() const { return numTriangleVertices; }
+unsigned short*& Cube::getNumTriangleVertices() const { return numTriangleVertices; }
 
 unsigned short& Cube::getNumEdgeVertices() const { return numEdgeVertices; }
 
@@ -93,13 +101,13 @@ float*& Cube::getColors() const { return colors; }
 
 float*& Cube::getEdgeColors() const { return edgeColors; }
 
-unsigned short*& Cube::getTriangles() const { return triangles; }
+unsigned short**& Cube::getTriangles() const { return triangles; }
 
 unsigned short*& Cube::getEdges() const { return edges; }
 
 unsigned int& Cube::getVertexColorBuffer() const { return vertexColorBuffer; }
 
-unsigned int& Cube::getTrianglesBuffer() const { return trianglesBuffer; }
+unsigned int*& Cube::getTrianglesBuffers() const { return trianglesBuffers; }
 
 unsigned int& Cube::getEdgesBuffer() const { return edgesBuffer; }
 

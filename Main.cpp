@@ -4,6 +4,7 @@ Author: Kiran Cotting
 Purpose: Learning OpenGL.
 Creating using the tutorial at https://learnopengl.com/
 */
+
 #define _USE_MATH_DEFINES
 #include <GLAD/glad.h>
 #include <GLFW/glfw3.h>
@@ -38,7 +39,7 @@ float cameraPhi = 0;
 double prevMouseX, prevMouseY;
 
 Cube cube(5, 0, 0, 5, 5, 5);
-Sphere sphere(3, -5, 0, 0, 2.5, 2.5, 2.5);
+Sphere sphere(-5, 0, 0, 2.5, 2.5, 2.5);
 
 int frameCount = 0;
 
