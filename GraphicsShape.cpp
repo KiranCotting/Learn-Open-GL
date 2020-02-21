@@ -66,7 +66,7 @@ void GraphicsShape::setRotation(const float& rx, const float& ry, const float& r
 }
 
 Matrix GraphicsShape::getModel() const {
-	Matrix model = Matrix::identity().scale(sx, sy, sz).rotate(rx, ry, rz).translate(x, y, z);
+	Matrix model = Matrix::identity().scale(sx, sy, sz).rotate(rx, ry, rz, true).translate(x, y, z);
 	return model;
 }
 

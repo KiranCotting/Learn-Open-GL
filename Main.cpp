@@ -12,9 +12,9 @@ Creating using the tutorial at https://learnopengl.com/
 #include <thread>
 #include <iostream>
 using std::cout; using std::endl;
-#include "Cube.h"
-#include "Sphere.h"
 #include "Camera.h"
+#include "Collision.h"
+#include "PhysicsSphere.h"
 
 static const double frameTime = 1.0 / 60;
 
@@ -38,8 +38,10 @@ float cameraPhi = 0;
 
 double prevMouseX, prevMouseY;
 
-Cube cube(5, 0, 0, 5, 5, 5);
-Sphere sphere(-5, 0, 0, 2.5, 2.5, 2.5);
+Particle* particles[2] = {
+	new PhysicsSphere(-10, 0, 0, 2.5),
+	new PhysicsSphere(10, 0, 0, 1)
+};
 
 int frameCount = 0;
 
@@ -192,6 +194,9 @@ void setup() {
 	// Back face culling
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
+
+	particles[0]->addVelocity(1, 0, 0);
+	particles[1]->addVelocity(-1, 0, 0);
 }
 
 void render(float time) {
@@ -203,6 +208,9 @@ void render(float time) {
 	);
 
 	camera.viewPoint(cameraPosition, look, Vector(0, 1, 0));
-	cube.render(camera.getProjection(), camera.getView());
-	sphere.render(camera.getProjection(), camera.getView());
+	particles[0]->updatePhysics(time);
+	particles[1]->updatePhysics(time);
+	particles[0]->draw(camera.getProjection(), camera.getView());
+	particles[1]->draw(camera.getProjection(), camera.getView());
+	checkCollision(particles[0], particles[1]);
 }

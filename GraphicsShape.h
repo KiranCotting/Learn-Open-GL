@@ -26,11 +26,11 @@ public:
 	float sy;
 	/// <summary> The z scale factor of this shape. Can be modified directly. </summary>
 	float sz;
-	/// <summary> The x-axis rotation of this shape, in degrees. Can be modified directly. </summary>
+	/// <summary> The x-axis rotation of this shape, in radians. Can be modified directly. </summary>
 	float rx;
-	/// <summary> The y-axis rotation of this shape, in degrees. Can be modified directly. </summary>
+	/// <summary> The y-axis rotation of this shape, in radians. Can be modified directly. </summary>
 	float ry;
-	/// <summary> The z-axis rotation of this shape, in degrees. Can be modified directly. </summary>
+	/// <summary> The z-axis rotation of this shape, in radians. Can be modified directly. </summary>
 	float rz;
 	/// <summary> Whether this shape should render in wireframe only. Can be modified directly. </summary>
 	bool wire;

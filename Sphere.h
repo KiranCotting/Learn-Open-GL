@@ -3,21 +3,20 @@
 #include <map>
 #include <vector>
 
-/// <summary> A child of GraphicsShape, to represent any Cube. </summary>
+/// <summary> A child of GraphicsShape, to represent any Sphere. </summary>
 class Sphere : public GraphicsShape {
 public:
-	/// <summary> Cube constructor. </summary>
-	/// <param name="levelOfDetail"> The level of detail to use when creating this sphere. Higher is better detail, but less efficient. </param>
+	/// <summary> Sphere constructor. </summary>
 	/// <param name="x"> The x-coord of this sphere. </param>
 	/// <param name="y"> The y-coord of this sphere. </param>
 	/// <param name="z"> The z-coord of this sphere. </param>
 	/// <param name="sx"> The x-scale of this sphere. </param>
 	/// <param name="sy"> The y-scale of this sphere. </param>
 	/// <param name="sz"> The z-scale of this sphere. </param>
-	/// <param name="rx"> The x-rotation of this sphere, in degrees. </param>
-	/// <param name="ry"> The y-rotation of this sphere, in degrees. </param>
-	/// <param name="rz"> The z-rotation of this sphere, in degrees. </param>
-	Sphere(const float& x = 0, const float& y = 0, const float& z = 0, const float& sx = 0, const float& sy = 0, const float& sz = 0, const float& rx = 0, const float& ry = 0, const float& rz = 0);
+	/// <param name="rx"> The x-rotation of this sphere, in radians. </param>
+	/// <param name="ry"> The y-rotation of this sphere, in radians. </param>
+	/// <param name="rz"> The z-rotation of this sphere, in radians. </param>
+	Sphere(const float& x = 0, const float& y = 0, const float& z = 0, const float& sx = 1, const float& sy = 1, const float& sz = 1, const float& rx = 0, const float& ry = 0, const float& rz = 0);
 
 	void drawTriangles() override;
 private:
